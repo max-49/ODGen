@@ -1925,6 +1925,9 @@ def promise_constructor(G: Graph, caller_ast, extra, _, executor=NodeHandleResul
 
 def promise_p_then(G: Graph, caller_ast, extra, this, on_fulfilled=NodeHandleResult(), on_rejected=NodeHandleResult()):
     new_promise = G.add_obj_node(caller_ast, None, None)
+    # CSEC 759 A3: mark the (still pending) result as a promise so HandleAwait
+    # does not mistake it for a plain value. Only await_.py reads this attribute.
+    G.set_node_attr(new_promise, ('is_promise', True))
     old_promises = this.obj_nodes
     def check_promise_status(self, G):
         nonlocal old_promises, on_fulfilled, on_rejected, extra
@@ -1949,6 +1952,9 @@ def promise_p_then(G: Graph, caller_ast, extra, this, on_fulfilled=NodeHandleRes
 
 def promise_p_catch(G: Graph, caller_ast, extra, this, on_rejected=NodeHandleResult()):
     new_promise = G.add_obj_node(caller_ast, None, None)
+    # CSEC 759 A3: mark the (still pending) result as a promise so HandleAwait
+    # does not mistake it for a plain value. Only await_.py reads this attribute.
+    G.set_node_attr(new_promise, ('is_promise', True))
     old_promises = this.obj_nodes
     def check_promise_status(self, G):
         nonlocal old_promises, on_rejected, extra

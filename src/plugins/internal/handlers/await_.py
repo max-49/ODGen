@@ -26,15 +26,16 @@ if AWAIT_MODE not in _VALID_MODES:
     raise ValueError('ODGEN_AWAIT_MODE must be one of %s, got %r'
                      % (_VALID_MODES, AWAIT_MODE))
 _MAX_FLATTEN_DEPTH = 8  # promise resolved with a promise: follow at most 8 levels
-_PROMISE_ATTRS = ('executors', 'fulfilled_with', 'rejected_with')
+_PROMISE_ATTRS = ('is_promise', 'executors', 'fulfilled_with', 'rejected_with')
 
 
 def is_modeled_promise(G, obj):
     """True if obj was created by ODGen's Promise model.
     new Promise(...) / Promise.resolve(...) link __proto__ -> G.promise_prototype
-    and set 'executors'; Promise.prototype.then/catch return a bare object
-    without __proto__, which is later given 'fulfilled_with'/'rejected_with'.
-    Checking both covers every promise the model creates."""
+    and set 'executors'. Promise.prototype.then/catch return a bare object with
+    no __proto__ and no attributes until their microtask runs; v1 missed these
+    and treated them as plain values (A3 decision D-A3-2, case N2s), so v2 marks
+    them with 'is_promise' in modeled_js_builtins.promise_p_then/catch."""
     attrs = G.get_node_attr(obj)
     if any(a in attrs for a in _PROMISE_ATTRS):
         return True
