@@ -5,7 +5,7 @@ from src.core.utils import NodeHandleResult, ExtraInfo
 from src.core.logger import loggers
 from src.plugins.internal.utils import get_df_callback, to_obj_nodes
 
-# --- CSEC 759 A3 (Massimo Marino): synchronous await resolution --------------
+# --- synchronous await resolution --------------
 # The esprima front end emits AST_YIELD for `await`, `yield` and spread (`...x`);
 # only the 'JS_AWAIT_EXPRESSION' flag identifies a real await. The baseline
 # handler resolves every operand through the modeled Promise.prototype.then,
